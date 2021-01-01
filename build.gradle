@@ -32,6 +32,7 @@ dependencies {
     compile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
     testImplementation 'io.projectreactor:reactor-test'
     implementation 'org.hibernate.validator:hibernate-validator'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
 }
 apply plugin: 'jacoco'
