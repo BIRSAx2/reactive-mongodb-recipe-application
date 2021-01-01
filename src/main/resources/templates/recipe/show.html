@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Show recipe</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:text-center">
+            <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Recipe Application</h2>
+            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                My Recipes!
+            </p>
+        </div>
+
+        <div class="mt-10">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" th:text="${recipe.description}">Recipe
+                        Description Here!
+                    </h3>
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                        Recipe details and ingredients.
+                    </p>
+                </div>
+                <div class="border-t border-gray-200">
+                    <dl>
+                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Image
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 flex">
+                                <div class="inline-block h-24 w-24 rounded-full overflow-hidden bg-gray-100 flex flex-wrap">
+
+                                    <img src="../../static/images/placeholder-400x400.png"
+                                         th:src="@{'/recipe/' + ${recipe.id} + '/recipeimage'}"
+                                         width="400" height="400">
+
+                                </div>
+                                <div class="mt-10">
+                                    <a th:href="@{'/recipe/' + ${recipe.id} + '/image'}" role="button"
+                                       class=" ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        Change Image
+                                    </a>
+                                </div>
+                            </dd>
+                        </div>
+                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Categories
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                <ul>
+                                    <li th:remove="all">cat one</li>
+                                    <li th:remove="all">cat two</li>
+                                    <li th:each="category : ${recipe.categories}"
+                                        th:text="${category.getDescription()}">cat three
+                                    </li>
+                                </ul>
+                            </dd>
+                        </div>
+                        <div class="flex">
+                            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt class="text-sm font-medium text-gray-500">
+                                    Preparation time
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                    <p th:text="${(recipe.prepTime) +  '  Min'}">30 min</p>
+                                </dd>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt class="text-sm font-medium text-gray-500">
+                                    Cooking time
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                    <p th:text="${(recipe.cookTime  +  '  Min')}">30 min</p>
+                                </dd>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt class="text-sm font-medium text-gray-500">
+                                    Difficulty
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                    <p th:text="${recipe.difficulty}">Easy</p>
+                                </dd>
+                            </div>
+                            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt class="text-sm font-medium text-gray-500">
+                                    Servings
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                    <p th:text="${recipe.servings}">4</p>
+                                </dd>
+                            </div>
+                        </div>
+                        <div class="flex">
+
+                            <div class=" px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt class="text-sm font-medium text-gray-500">
+                                    Source
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                    <p th:text="${recipe.source}">Source Website</p>
+                                </dd>
+                            </div>
+                            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt class="text-sm font-medium text-gray-500">
+                                    URL:
+                                </dt>
+                                <dd class="mt-1 text-sm text-indigo-600 sm:mt-0 sm:col-span-2">
+                                    <p><a href="#" th:href="@{recipe.url}">View Original</a></p>
+                                </dd>
+                            </div>
+                        </div>
+                        <!--Ingredients-->
+                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Ingredients
+                                <a class="ml-5 font-normal text-indigo-600" href="#"
+                                   th:href="@{'/recipe/' + ${recipe.id} + '/ingredients'}" role="button">View</a>
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                                    <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm"
+                                        th:remove="all">
+                                        1 Cup of milk
+                                    </li>
+                                    <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm"
+                                        th:remove="all">
+                                        1 Teaspoon of chocolate
+                                    </li>
+                                    <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm"
+                                        th:each="ingredient : ${recipe.ingredients}"
+                                        th:text="${(ingredient.getAmount() +
+                                        ' ' + ingredient.uom.getDescription() +
+                                        ' - ' + ingredient.getDescription())}">
+                                        1 Teaspoon of Sugar
+                                    </li>
+                                </ul>
+                            </dd>
+                        </div>
+                        <!--directions-->
+                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Directions
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2" th:text="${recipe.directions}">
+                                Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa
+                                consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit
+                                nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing
+                                reprehenderit deserunt qui eu.
+                            </dd>
+                        </div>
+                        <!--notes-->
+                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">
+                                Notes
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+                                th:text="${recipe.notes.recipeNotes}">
+                                Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa
+                                consequat. Excepteur qui ipsum aliquip consequat sint. Sit id mollit nulla mollit
+                                nostrud in ea officia proident. Irure nostrud pariatur mollit ad adipisicing
+                                reprehenderit deserunt qui eu.
+                            </dd>
+                        </div>
+
+                    </dl>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
