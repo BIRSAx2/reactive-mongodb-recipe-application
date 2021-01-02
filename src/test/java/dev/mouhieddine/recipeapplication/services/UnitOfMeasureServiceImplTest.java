@@ -3,15 +3,13 @@ package dev.mouhieddine.recipeapplication.services;
 import dev.mouhieddine.recipeapplication.commands.UnitOfMeasureCommand;
 import dev.mouhieddine.recipeapplication.converters.UnitOfMeasureToUnitOfMeasureCommand;
 import dev.mouhieddine.recipeapplication.domain.UnitOfMeasure;
-import dev.mouhieddine.recipeapplication.repositories.UnitOfMeasureRepository;
+import dev.mouhieddine.recipeapplication.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.HashSet;
-import java.util.Set;
+import reactor.core.publisher.Flux;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -19,38 +17,35 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class UnitOfMeasureServiceImplTest {
 
-  UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand = new UnitOfMeasureToUnitOfMeasureCommand();
+  UnitOfMeasureToUnitOfMeasureCommand uomConverter = new UnitOfMeasureToUnitOfMeasureCommand();
   UnitOfMeasureService service;
 
   @Mock
-  UnitOfMeasureRepository unitOfMeasureRepository;
+  UnitOfMeasureReactiveRepository repository;
 
   @BeforeEach
   public void setUp() throws Exception {
 
-    service = new UnitOfMeasureServiceImpl(unitOfMeasureRepository, unitOfMeasureToUnitOfMeasureCommand);
+    service = new UnitOfMeasureServiceImpl(repository, uomConverter);
   }
 
   @Test
   public void listAllUoms() throws Exception {
     //given
-    Set<UnitOfMeasure> unitOfMeasures = new HashSet<>();
     UnitOfMeasure uom1 = new UnitOfMeasure();
     uom1.setId("1");
-    unitOfMeasures.add(uom1);
 
     UnitOfMeasure uom2 = new UnitOfMeasure();
     uom2.setId("2");
-    unitOfMeasures.add(uom2);
 
-    when(unitOfMeasureRepository.findAll()).thenReturn(unitOfMeasures);
+    when(repository.findAll()).thenReturn(Flux.just(uom1, uom2));
 
     //when
-    Set<UnitOfMeasureCommand> commands = service.listAllUoms();
+    Flux<UnitOfMeasureCommand> commands = service.listAllUoms();
 
     //then
-    assertEquals(2, commands.size());
-    verify(unitOfMeasureRepository, times(1)).findAll();
+    assertEquals(2, commands.count().block());
+    verify(repository, times(1)).findAll();
   }
 
 }
