@@ -1,29 +1,39 @@
 package dev.mouhieddine.recipeapplication.repositories;
 
 
+import dev.mouhieddine.recipeapplication.bootstrap.RecipeBootstrap;
 import dev.mouhieddine.recipeapplication.domain.UnitOfMeasure;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-@Disabled
-@ExtendWith(MockitoExtension.class)
-@DataMongoTest
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class UnitOfMeasureRepositoryIT {
 
   @Autowired
   UnitOfMeasureRepository unitOfMeasureRepository;
+  @Autowired
+  CategoryRepository categoryRepository;
+  @Autowired
+  RecipeRepository recipeRepository;
 
   @BeforeEach
   public void setUp() throws Exception {
+    // reset db to prevent reloading categories already loaded
+    unitOfMeasureRepository.deleteAll();
+    categoryRepository.deleteAll();
+    recipeRepository.deleteAll();
+    // load categories
+    RecipeBootstrap recipeBootstrap = new RecipeBootstrap(categoryRepository, recipeRepository, unitOfMeasureRepository);
+    recipeBootstrap.onApplicationEvent(null);
   }
 
   @Test
