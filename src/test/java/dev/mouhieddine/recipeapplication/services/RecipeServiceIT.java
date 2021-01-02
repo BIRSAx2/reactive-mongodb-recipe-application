@@ -7,15 +7,14 @@ import dev.mouhieddine.recipeapplication.domain.Recipe;
 import dev.mouhieddine.recipeapplication.repositories.RecipeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
-//@DataMongoTest
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class RecipeServiceIT {
 
