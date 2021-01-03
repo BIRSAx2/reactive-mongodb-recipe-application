@@ -5,6 +5,7 @@ import dev.mouhieddine.recipeapplication.exceptions.NotFoundException;
 import dev.mouhieddine.recipeapplication.services.ImageService;
 import dev.mouhieddine.recipeapplication.services.ImageServiceImpl;
 import dev.mouhieddine.recipeapplication.services.RecipeService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +24,7 @@ import java.io.InputStream;
  * @author : Mouhieddine.dev
  * @since : 1/1/2021, Friday
  **/
+@Slf4j
 @Controller
 public class ImageController {
 
@@ -43,9 +45,7 @@ public class ImageController {
 
   @PostMapping("recipe/{id}/image")
   public String handleImagePost(@PathVariable String id, @RequestParam("imagefile") MultipartFile file) {
-
     imageService.saveImageFile(id, file).block();
-
     return "redirect:/recipe/" + id + "/show";
   }
 
@@ -53,16 +53,8 @@ public class ImageController {
   public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
     RecipeCommand recipeCommand = recipeService.findCommandById(id).block();
     if (recipeCommand == null) throw new NotFoundException("Recipe not found");
-
     if (recipeCommand.getImage() != null) {
       byte[] byteArray = ImageServiceImpl.toPrimitives(recipeCommand.getImage());
-//      byte[] byteArray = new byte[recipeCommand.getImage().length];
-//      int i = 0;
-//
-//      for (Byte wrappedByte : recipeCommand.getImage()) {
-//        byteArray[i++] = wrappedByte; //auto unboxing
-//      }
-
       response.setContentType("image/jpeg");
       InputStream is = new ByteArrayInputStream(byteArray);
       IOUtils.copy(is, response.getOutputStream());

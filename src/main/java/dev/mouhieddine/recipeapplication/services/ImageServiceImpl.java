@@ -51,7 +51,8 @@ public class ImageServiceImpl implements ImageService {
               }
               return recipe;
             });
-    recipeReactiveRepository.save(recipeMono.block());
+    recipeReactiveRepository.save(recipeMono.block()).block();
+    Recipe r = recipeReactiveRepository.findById(recipeId).block();
     return Mono.empty();
   }
 }
