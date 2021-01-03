@@ -1,7 +1,9 @@
 package dev.mouhieddine.recipeapplication.controller;
 
 import dev.mouhieddine.recipeapplication.commands.RecipeCommand;
+import dev.mouhieddine.recipeapplication.exceptions.NotFoundException;
 import dev.mouhieddine.recipeapplication.services.ImageService;
+import dev.mouhieddine.recipeapplication.services.ImageServiceImpl;
 import dev.mouhieddine.recipeapplication.services.RecipeService;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
@@ -34,7 +36,7 @@ public class ImageController {
 
   @GetMapping("recipe/{id}/image")
   public String showUploadForm(@PathVariable String id, Model model) {
-    model.addAttribute("recipe", recipeService.findCommandById(id));
+    model.addAttribute("recipe", recipeService.findCommandById(id).block());
 
     return "recipe/imageuploadform";
   }
@@ -42,7 +44,7 @@ public class ImageController {
   @PostMapping("recipe/{id}/image")
   public String handleImagePost(@PathVariable String id, @RequestParam("imagefile") MultipartFile file) {
 
-    imageService.saveImageFile(id, file);
+    imageService.saveImageFile(id, file).block();
 
     return "redirect:/recipe/" + id + "/show";
   }
@@ -50,14 +52,16 @@ public class ImageController {
   @GetMapping("recipe/{id}/recipeimage")
   public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
     RecipeCommand recipeCommand = recipeService.findCommandById(id).block();
+    if (recipeCommand == null) throw new NotFoundException("Recipe not found");
 
     if (recipeCommand.getImage() != null) {
-      byte[] byteArray = new byte[recipeCommand.getImage().length];
-      int i = 0;
-
-      for (Byte wrappedByte : recipeCommand.getImage()) {
-        byteArray[i++] = wrappedByte; //auto unboxing
-      }
+      byte[] byteArray = ImageServiceImpl.toPrimitives(recipeCommand.getImage());
+//      byte[] byteArray = new byte[recipeCommand.getImage().length];
+//      int i = 0;
+//
+//      for (Byte wrappedByte : recipeCommand.getImage()) {
+//        byteArray[i++] = wrappedByte; //auto unboxing
+//      }
 
       response.setContentType("image/jpeg");
       InputStream is = new ByteArrayInputStream(byteArray);
