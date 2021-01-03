@@ -149,6 +149,6 @@ public class IngredientServiceImpl implements IngredientService {
     } else {
       log.debug("Recipe Id Not found. Id:" + recipeId);
     }
-    return null;
+    return Mono.empty();
   }
 }
