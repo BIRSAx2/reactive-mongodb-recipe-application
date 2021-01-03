@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -67,7 +68,7 @@ class IngredientControllerTest {
   @Test
   public void testShowIngredient() throws Exception {
     //given
-    IngredientCommand ingredientCommand = new IngredientCommand();
+    Mono<IngredientCommand> ingredientCommand = Mono.just(new IngredientCommand());
 
     //when
     when(ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(ingredientCommand);
@@ -103,7 +104,7 @@ class IngredientControllerTest {
   @Test
   public void testUpdateIngredientForm() throws Exception {
     //given
-    IngredientCommand ingredientCommand = new IngredientCommand();
+    Mono<IngredientCommand> ingredientCommand = Mono.just(new IngredientCommand());
 
     //when
     when(ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(ingredientCommand);
@@ -123,9 +124,10 @@ class IngredientControllerTest {
     IngredientCommand command = new IngredientCommand();
     command.setId("3");
     command.setRecipeId("2");
+    Mono<IngredientCommand> commandMono = Mono.just(command);
 
     //when
-    when(ingredientService.saveIngredientCommand(any())).thenReturn(command);
+    when(ingredientService.saveIngredientCommand(any())).thenReturn(commandMono);
 
     //then
     mockMvc.perform(post("/recipe/2/ingredient")
