@@ -8,7 +8,6 @@ import dev.mouhieddine.recipeapplication.repositories.RecipeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -42,7 +41,7 @@ public class RecipeServiceIT {
 
     //when
     testRecipeCommand.setDescription(NEW_DESCRIPTION);
-    RecipeCommand savedRecipeCommand = recipeService.saveRecipeCommand(testRecipeCommand);
+    RecipeCommand savedRecipeCommand = recipeService.saveRecipeCommand(testRecipeCommand).block();
 
     //then
     assertEquals(NEW_DESCRIPTION, savedRecipeCommand.getDescription());
