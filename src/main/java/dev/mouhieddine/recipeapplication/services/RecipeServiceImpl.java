@@ -7,7 +7,6 @@ import dev.mouhieddine.recipeapplication.domain.Recipe;
 import dev.mouhieddine.recipeapplication.repositories.reactive.RecipeReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -42,30 +41,23 @@ public class RecipeServiceImpl implements RecipeService {
   @Override
   public Mono<RecipeCommand> findCommandById(String id) {
 
-    RecipeCommand recipeCommand = recipeToRecipeCommand.convert(findById(id).block());
-
-    //enhance command object with id value
-    if (recipeCommand.getIngredients() != null && recipeCommand.getIngredients().size() > 0) {
-      recipeCommand.getIngredients().forEach(rc -> {
-        rc.setRecipeId(recipeCommand.getId());
-      });
-    }
-
-    return Mono.just(recipeCommand);
+    return recipeReactiveRepository.findById(id)
+            .map(recipe -> {
+              RecipeCommand recipeCommand = recipeToRecipeCommand.convert(recipe);
+              recipeCommand.getIngredients()
+                      .forEach(ingredientCommand -> ingredientCommand.setRecipeId(recipeCommand.getId()));
+              return recipeCommand;
+            });
   }
 
   @Override
   public Mono<RecipeCommand> saveRecipeCommand(RecipeCommand command) {
-    Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
-
-    Recipe savedRecipe = recipeReactiveRepository.save(detachedRecipe).block();
-    log.debug("Saved RecipeId:" + savedRecipe.getId());
-    return Mono.just(recipeToRecipeCommand.convert(savedRecipe));
+    return recipeReactiveRepository.save(recipeCommandToRecipe.convert(command))
+            .map(recipeToRecipeCommand::convert);
   }
 
   @Override
   public Mono<Void> deleteById(String idToDelete) {
-    recipeReactiveRepository.deleteById(idToDelete);
-    return Mono.empty();
+    return recipeReactiveRepository.deleteById(idToDelete);
   }
 }
