@@ -1,6 +1,7 @@
 package dev.mouhieddine.recipeapplication.services;
 
 import dev.mouhieddine.recipeapplication.commands.IngredientCommand;
+import dev.mouhieddine.recipeapplication.commands.UnitOfMeasureCommand;
 import dev.mouhieddine.recipeapplication.converters.IngredientCommandToIngredient;
 import dev.mouhieddine.recipeapplication.converters.IngredientToIngredientCommand;
 import dev.mouhieddine.recipeapplication.converters.UnitOfMeasureCommandToUnitOfMeasure;
@@ -9,11 +10,14 @@ import dev.mouhieddine.recipeapplication.domain.Ingredient;
 import dev.mouhieddine.recipeapplication.domain.Recipe;
 import dev.mouhieddine.recipeapplication.repositories.RecipeRepository;
 import dev.mouhieddine.recipeapplication.repositories.UnitOfMeasureRepository;
+import dev.mouhieddine.recipeapplication.repositories.reactive.RecipeReactiveRepository;
+import dev.mouhieddine.recipeapplication.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
@@ -27,10 +31,13 @@ public class IngredientServiceImplTest {
   private final IngredientCommandToIngredient ingredientCommandToIngredient;
 
   @Mock
+  RecipeReactiveRepository recipeReactiveRepository;
+
+  @Mock
   RecipeRepository recipeRepository;
 
   @Mock
-  UnitOfMeasureRepository unitOfMeasureRepository;
+  UnitOfMeasureReactiveRepository unitOfMeasureRepository;
 
   IngredientService ingredientService;
 
@@ -42,9 +49,8 @@ public class IngredientServiceImplTest {
 
   @BeforeEach
   public void setUp() throws Exception {
-
     ingredientService = new IngredientServiceImpl(ingredientToIngredientCommand, ingredientCommandToIngredient,
-            recipeRepository, unitOfMeasureRepository);
+            recipeReactiveRepository, unitOfMeasureRepository, recipeRepository);
   }
 
   @Test
@@ -71,14 +77,14 @@ public class IngredientServiceImplTest {
     recipe.addIngredient(ingredient3);
     Optional<Recipe> recipeOptional = Optional.of(recipe);
 
-    when(recipeRepository.findById(anyString())).thenReturn(recipeOptional);
+    when(recipeReactiveRepository.findById(anyString())).thenReturn(Mono.just(recipe));
 
     //then
     IngredientCommand ingredientCommand = ingredientService.findByRecipeIdAndIngredientId("1", "3").block();
 
     //when
     assertEquals("3", ingredientCommand.getId());
-    verify(recipeRepository, times(1)).findById(anyString());
+    verify(recipeReactiveRepository, times(1)).findById(anyString());
   }
 
 
@@ -88,6 +94,8 @@ public class IngredientServiceImplTest {
     IngredientCommand command = new IngredientCommand();
     command.setId("3");
     command.setRecipeId("2");
+    command.setUom(new UnitOfMeasureCommand());
+    command.getUom().setId("1234");
 
     Optional<Recipe> recipeOptional = Optional.of(new Recipe());
 
@@ -96,7 +104,7 @@ public class IngredientServiceImplTest {
     savedRecipe.getIngredients().iterator().next().setId("3");
 
     when(recipeRepository.findById(anyString())).thenReturn(recipeOptional);
-    when(recipeRepository.save(any())).thenReturn(savedRecipe);
+    when(recipeReactiveRepository.save(any())).thenReturn(Mono.just(savedRecipe));
 
     //when
     IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command).block();
@@ -104,7 +112,7 @@ public class IngredientServiceImplTest {
     //then
     assertEquals("3", savedCommand.getId());
     verify(recipeRepository, times(1)).findById(anyString());
-    verify(recipeRepository, times(1)).save(any(Recipe.class));
+    verify(recipeReactiveRepository, times(1)).save(any(Recipe.class));
 
   }
 
