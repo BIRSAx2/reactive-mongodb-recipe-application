@@ -1,7 +1,6 @@
 package dev.mouhieddine.recipeapplication.controller;
 
 import dev.mouhieddine.recipeapplication.commands.IngredientCommand;
-import dev.mouhieddine.recipeapplication.commands.RecipeCommand;
 import dev.mouhieddine.recipeapplication.commands.UnitOfMeasureCommand;
 import dev.mouhieddine.recipeapplication.services.IngredientService;
 import dev.mouhieddine.recipeapplication.services.RecipeService;
@@ -62,7 +61,7 @@ public class IngredientController {
   @GetMapping("recipe/{recipeId}/ingredient/new")
   public String newIngredient(@PathVariable String recipeId, Model model) {
     //make sure we have a good id value
-    RecipeCommand recipeCommand = recipeService.findCommandById(recipeId).block();
+//    RecipeCommand recipeCommand = recipeService.findCommandById(recipeId).block();
     //todo raise exception if null
 
     //need to return back parent id for hidden form property
@@ -84,7 +83,7 @@ public class IngredientController {
   }
 
   @PostMapping("recipe/{recipeId}/ingredient")
-  public String saveOrUpdate(@ModelAttribute("ingredient") IngredientCommand command, Model model) {
+  public String saveOrUpdate(@ModelAttribute("ingredient") IngredientCommand command, Model model, @PathVariable String recipeid) {
     webDataBinder.validate();
     BindingResult bindingResult = webDataBinder.getBindingResult();
 
@@ -98,9 +97,9 @@ public class IngredientController {
       return "recipe/ingredient/ingredientform";
 
     }
-    IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command).block();
+//    IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command).block();
 
-    return "redirect:/recipe/" + savedCommand.getRecipeId() + "/ingredients";
+    return "redirect:/recipe/" + recipeid + "/ingredients";
   }
 
   @GetMapping("recipe/{recipeId}/ingredient/{id}/delete")
