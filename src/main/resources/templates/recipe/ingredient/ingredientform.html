@@ -19,6 +19,7 @@
             <div class="flex flex-col">
                 <form action="#" th:object="${ingredient}"
                       th:action="@{'/recipe/' + ${ingredient.getRecipeId()} + '/ingredient'}" method="post">
+                    <span class="text-red-500" th:if="${#fields.hasErrors('*')}">Correct errors below</span>
                     <input type="hidden" th:field="*{id}"/>
                     <div class="shadow overflow-hidden sm:rounded-md">
                         <div class="px-4 py-5 bg-white sm:p-6">
@@ -27,12 +28,22 @@
                                     <label class="block text-sm font-medium text-gray-700">Description</label>
                                     <input type="text" th:field="*{description}"
                                            class="mt-1  block w-full shadow-sm  rounded-md" placeholder="Description">
+                                    <span class="text-red-500" th:if="${#fields.hasErrors('description')}">
+                                        <ul>
+                                            <li th:each="err : ${#fields.errors('description')}" th:text="${err}"/>
+                                        </ul>
+                                    </span>
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-3">
                                     <label class="block text-sm font-medium text-gray-700">Amount</label>
                                     <input type="number" min="1" th:field="*{amount}" placeholder="1"
                                            class="mt-1 ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    <span class="text-red-500" th:if="${#fields.hasErrors('amount')}">
+                                        <ul>
+                                            <li th:each="err : ${#fields.errors('amount')}" th:text="${err}"/>
+                                        </ul>
+                                    </span>
                                 </div>
 
 
@@ -46,6 +57,11 @@
                                                 th:text="${uomEach.description}">Each
                                         </option>
                                     </select>
+                                    <span class="text-red-500" th:if="${#fields.hasErrors('uom')}">
+                                        <ul>
+                                            <li th:each="err : ${#fields.errors('uom')}" th:text="${err}"/>
+                                        </ul>
+                                    </span>
                                 </div>
                             </div>
                         </div>
