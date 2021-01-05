@@ -1,12 +1,8 @@
 package dev.mouhieddine.recipeapplication.controller;
 
-import dev.mouhieddine.recipeapplication.commands.RecipeCommand;
-import dev.mouhieddine.recipeapplication.exceptions.NotFoundException;
 import dev.mouhieddine.recipeapplication.services.ImageService;
-import dev.mouhieddine.recipeapplication.services.ImageServiceImpl;
 import dev.mouhieddine.recipeapplication.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * @author : Mouhieddine.dev
@@ -49,15 +40,15 @@ public class ImageController {
     return "redirect:/recipe/" + id + "/show";
   }
 
-  @GetMapping("recipe/{id}/recipeimage")
-  public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
-    RecipeCommand recipeCommand = recipeService.findCommandById(id).block();
-    if (recipeCommand == null) throw new NotFoundException("Recipe not found");
-    if (recipeCommand.getImage() != null) {
-      byte[] byteArray = ImageServiceImpl.toPrimitives(recipeCommand.getImage());
-      response.setContentType("image/jpeg");
-      InputStream is = new ByteArrayInputStream(byteArray);
-      IOUtils.copy(is, response.getOutputStream());
-    }
-  }
+//  @GetMapping("recipe/{id}/recipeimage")
+//  public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
+//    RecipeCommand recipeCommand = recipeService.findCommandById(id).block();
+//    if (recipeCommand == null) throw new NotFoundException("Recipe not found");
+//    if (recipeCommand.getImage() != null) {
+//      byte[] byteArray = ImageServiceImpl.toPrimitives(recipeCommand.getImage());
+//      response.setContentType("image/jpeg");
+//      InputStream is = new ByteArrayInputStream(byteArray);
+//      IOUtils.copy(is, response.getOutputStream());
+//    }
+//}
 }

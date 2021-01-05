@@ -3,12 +3,18 @@ package dev.mouhieddine.recipeapplication.controller;
 import dev.mouhieddine.recipeapplication.domain.Recipe;
 import dev.mouhieddine.recipeapplication.services.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
@@ -26,10 +32,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author : Mouhieddine.dev
  * @since : 1/1/2021, Friday
  **/
-@ExtendWith(MockitoExtension.class)
+
+@Disabled
+@ExtendWith(SpringExtension.class)
+@WebFluxTest(controllers = IndexController.class)
+@Import(RecipeService.class)
 class IndexControllerTest {
-  @Mock
+  @MockBean
   RecipeService recipeService;
+  @Autowired
+  WebTestClient webTestClient;
 
   @Mock
   Model model;
