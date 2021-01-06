@@ -1,14 +1,16 @@
 package dev.mouhieddine.recipeapplication.controller;
 
 import dev.mouhieddine.recipeapplication.commands.RecipeCommand;
+import dev.mouhieddine.recipeapplication.exceptions.NotFoundException;
 import dev.mouhieddine.recipeapplication.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.thymeleaf.exceptions.TemplateInputException;
 import reactor.core.publisher.Mono;
 
 /**
@@ -66,17 +68,9 @@ public class RecipeController {
       return Mono.just(RECIPE_RECIPEFORM_URL);
     }
     return command.flatMap(
-            recipeCommand -> {
-              return recipeService.saveRecipeCommand(recipeCommand)
-                      .flatMap(recipeSaved -> {
-                        return Mono.just("redirect:/recipe/" + recipeSaved.getId() + "/show");
-                      });
-            }
-    ).onErrorResume(ex -> {
-      log.error(ex.getMessage());
-      return Mono.just(RECIPE_RECIPEFORM_URL);
-    });
-
+            recipeCommand -> recipeService.saveRecipeCommand(recipeCommand)
+                    .flatMap(recipeSaved -> Mono.just("redirect:/recipe/" + recipeSaved.getId() + "/show"))
+    );
   }
 
   @GetMapping("recipe/{id}/delete")
@@ -88,5 +82,16 @@ public class RecipeController {
     return "redirect:/";
   }
 
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler({NotFoundException.class, TemplateInputException.class})
+  public String handleNotFound(Exception exception, Model model) {
 
+    log.error("Handling not found exception");
+    log.error(exception.getMessage());
+
+
+    model.addAttribute("exception", exception);
+
+    return "404error";
+  }
 }
